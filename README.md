@@ -1,31 +1,26 @@
 # CreatorPulse
 
-A small prototype for creator recommendations and notification events.
+A simple creator ranker with an explanation attached to each result.
 
-## Current implementation
+The score is the number of interests shared with a creator’s tags. Already-followed creators are excluded, and ties are broken by creator ID so the result stays predictable. A separate in-memory outbox rejects conflicting event IDs and ignores identical retries.
 
-Scores creators by overlapping interest tags, excludes followed creators, returns Top-K results with stable ID-based tie breaking, and deduplicates notification events.
+## Example
 
-## Run
+Requires Python 3.10 or newer. Everything uses the standard library.
 
-With Python 3.10+, clone this repository and run:
-
-```bash
+```sh
+git clone https://github.com/priyamukkapati/CreatorPulse.git
+cd CreatorPulse
 python3 app.py
-```
-
-The demo ranks code-with-sam before data-with-jo for the interests python and backend.
-
-## Tests
-
-```bash
 python3 -m unittest discover -s tests -v
 ```
 
-## Limitations
+For the interests `python` and `backend`, the example places `code-with-sam` ahead of `data-with-jo`.
 
-This is a rule-based ranker, not a trained ML model. The outbox is in memory and does not deliver notifications or persist events.
+The tests cover ranking, followed-creator exclusions, zero requested results, repeated notification events, and conflicting event payloads.
 
-## Roadmap
+## Where it stands
 
-Add a FastAPI API, persist activity and outbox events in PostgreSQL, evaluate ranking quality on a real dataset, and add background delivery workers.
+The ranking is based on tag overlap. It has no trained model or measured recommendation-quality result yet. The outbox stores events in memory and does not send notifications.
+
+A labeled evaluation fixture would make the ranking easier to assess. Tie cases and shuffled input also need broader tests before extending the ranker.
